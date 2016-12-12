@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import importlib
+import pkgutil
 import sys
 import spl.commands as commands
 
@@ -8,7 +10,7 @@ from argparse import ArgumentParser
 from spl.metadata import NAME, VERSION
 
 
-COMMANDS = [c for c in dir(commands) if c[0] != "_" and callable(getattr(commands, c))]
+COMMANDS = [m for _, m, _ in pkgutil.walk_packages(commands.__path__) if m[0] != "_"]
 
 
 def main(argv=None):
@@ -21,13 +23,21 @@ def main(argv=None):
 
     parser = ArgumentParser()
     parser.add_argument('-V', '--version', action='version', version="{} v{}".format(NAME, VERSION))
-    parser.add_argument("command", metavar="COMMAND", choices=COMMANDS)
+
+    subparsers = parser.add_subparsers()
+    for command in COMMANDS:
+        subparser = subparsers.add_parser(command)
+
+        command_module = importlib.import_module("spl.commands.{}".format(command))
+        if hasattr(command_module, "add_parser_args") and hasattr(command_module, "run"):
+            command_module.add_parser_args(subparser)
+            subparser.set_defaults(func=command_module.run)
 
     # Process arguments
-    args, extras = parser.parse_known_args()
+    args = parser.parse_args()
 
-    if args.command in COMMANDS:
-        return getattr(commands, args.command)(args, extras)
+    if args.func:
+        return args.func(args)
     else:
         # argparse should prevent us from getting here
         print("Unrecognised action: {}".format(args.command))
