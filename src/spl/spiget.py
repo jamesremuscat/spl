@@ -35,7 +35,10 @@ class Resource(object):
         self.versions = sorted(spiget.resource_versions(self.id), key=lambda v: v.release_date, reverse=True)
         self.current_version = [v for v in self.versions if v.id == json['version']['id']][0]
 
-        self.category_id = json['category']['id']
+        self.category = spiget.category(json['category']['id'])
+
+        self.tested_versions = json['testedVersions']
+
         self.external = json['external']
 
         self.file_size = ""
@@ -46,6 +49,12 @@ class Resource(object):
 class Author(object):
     def __init__(self, spiget, json):
         self.spiget = spiget
+        self.name = json['name']
+        self.id = json['id']
+
+
+class Category(object):
+    def __init__(self, spiget, json):
         self.name = json['name']
         self.id = json['id']
 
@@ -86,3 +95,4 @@ class SpiGet(object):
     resource_versions = api_call("resources/{}/versions", Versions)
 
     author = api_call("authors/{}", Author)
+    category = api_call("categories/{}", Category)

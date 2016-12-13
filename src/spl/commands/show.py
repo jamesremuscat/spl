@@ -15,9 +15,12 @@ def formatResource(resource):
     strings = [
         "Package:        {}".format(resource.name),
         "Author:         {}".format(resource.author.name),
-        "Updated:        {}".format(resource.update_date),
+        "Tag:            {}".format(resource.tag),
+        "Category:       {}".format(resource.category.name),
         "Latest version: {}".format(resource.current_version),
-        "Versions:       {}".format(resource.versions)
+        "Versions:       {}".format(resource.versions),
+        "Updated:        {}".format(resource.update_date),
+        "Tested against: [{}]".format(", ".join(resource.tested_versions))
     ]
 
     return "\n".join(strings)
