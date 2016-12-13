@@ -88,8 +88,8 @@ class SpiGet(object):
             cache=FileCache('.spl/cache')
         )
 
-    resourceDetails = api_call("resources/{}", Resource)
-    resource_versions = api_call("resources/{}/versions", Versions)
-
     author = api_call("authors/{}", Author)
     category = api_call("categories/{}", Category)
+
+    resource_details = api_call("resources/{}", Resource)
+    resource_versions = api_call("resources/{}/versions", Versions)

@@ -7,7 +7,7 @@ def add_parser_args(parser):
 
 def run(args):
     spiget = SpiGet()
-    print(formatResource(spiget.resourceDetails(args.package_name)))
+    print(formatResource(spiget.resource_details(args.package_name)))
     return 0
 
 
