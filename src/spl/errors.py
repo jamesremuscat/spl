@@ -1,0 +1,2 @@
+class NonSingletonResultException(Exception):
+    pass

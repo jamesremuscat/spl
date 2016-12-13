@@ -1,3 +1,4 @@
+import collections
 import datetime
 import requests
 
@@ -5,6 +6,7 @@ import spl.metadata as metadata
 
 from cachecontrol import CacheControl
 from cachecontrol.caches import FileCache
+from spl.errors import NonSingletonResultException
 
 
 def api_call(url, clazz):
@@ -24,6 +26,8 @@ def api_call(url, clazz):
 
 class Resource(object):
     def __init__(self, spiget, json):
+        if isinstance(json, collections.Sequence):
+            raise NonSingletonResultException()
         self.id = json['id']
         self.name = json['name']
         self.tag = json['tag']
@@ -73,7 +77,8 @@ class Version(object):
         self.id = json['id']
         self.name = json['name']
         self.release_date = json['releaseDate']
-        self.url = json['url']
+        if 'url' in json:
+            self.url = json['url']
 
     def __repr__(self, *args, **kwargs):
         return self.name
@@ -83,6 +88,7 @@ class SearchResult(object):
     def __init__(self, spiget, json):
         self.name = json['name']
         self.tag = json['tag']
+        self.id = json['id']
 
 
 class SpiGet(object):

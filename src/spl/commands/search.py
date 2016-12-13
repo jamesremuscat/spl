@@ -9,5 +9,5 @@ def run(args):
     spiget = SpiGet()
     results = spiget.resource_search(args.query)
     for result in results:
-        print("{} - {}".format(result.name, result.tag))
+        print("{:<8} {} - {}".format(result.id, result.name, result.tag))
     return 0
