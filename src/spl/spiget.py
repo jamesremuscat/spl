@@ -1,11 +1,19 @@
 import requests
 
+from cachecontrol import CacheControl
+from cachecontrol.caches import FileCache
+
 
 class SpiGet(object):
     def __init__(self):
-        self.session = requests.Session()
+        session = requests.Session()
         self.rootURL = "https://api.spiget.org/v2/"
-        self.session.headers['User-Agent'] = "spl v0.0.1-dev"
+        session.headers['User-Agent'] = "spl v0.0.1-dev"
+
+        self.session = CacheControl(
+            session,
+            cache=FileCache('.spl/cache')
+        )
 
     def resourceDetails(self, resourceIdent):
         result = self.session.get(self.rootURL + "resources/{}".format(resourceIdent))
