@@ -24,8 +24,6 @@ def api_call(url, clazz):
 
 class Resource(object):
     def __init__(self, spiget, json):
-        self.spiget = spiget
-
         self.id = json['id']
         self.name = json['name']
         self.tag = json['tag']
@@ -50,7 +48,6 @@ class Resource(object):
 
 class Author(object):
     def __init__(self, spiget, json):
-        self.spiget = spiget
         self.name = json['name']
         self.id = json['id']
 
@@ -63,7 +60,6 @@ class Category(object):
 
 class Versions(object):
     def __init__(self, spiget, json):
-        self.spiget = spiget
         self.versions = list(map(lambda v: Version(self, v), json))
 
     def __getitem__(self, key):
@@ -72,7 +68,6 @@ class Versions(object):
 
 class Version(object):
     def __init__(self, spiget, json):
-        self.spiget = spiget
         self.id = json['id']
         self.name = json['name']
         self.release_date = json['releaseDate']
