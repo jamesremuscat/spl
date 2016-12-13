@@ -1,6 +1,8 @@
 import datetime
 import requests
 
+import spl.metadata as metadata
+
 from cachecontrol import CacheControl
 from cachecontrol.caches import FileCache
 
@@ -84,7 +86,7 @@ class SpiGet(object):
     def __init__(self):
         session = requests.Session()
         self.rootURL = "https://api.spiget.org/v2/"
-        session.headers['User-Agent'] = "spl v0.0.1-dev"
+        session.headers['User-Agent'] = "{} v{}".format(metadata.NAME, metadata.VERSION)
 
         self.session = CacheControl(
             session,
