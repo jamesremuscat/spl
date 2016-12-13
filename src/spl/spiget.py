@@ -79,6 +79,12 @@ class Version(object):
         return self.name
 
 
+class SearchResult(object):
+    def __init__(self, spiget, json):
+        self.name = json['name']
+        self.tag = json['tag']
+
+
 class SpiGet(object):
     def __init__(self):
         session = requests.Session()
@@ -95,3 +101,5 @@ class SpiGet(object):
 
     resource_details = api_call("resources/{}", Resource)
     resource_versions = api_call("resources/{}/versions", ListResult(Version))
+
+    resource_search = api_call("search/resources/{}", ListResult(SearchResult))
