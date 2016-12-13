@@ -58,12 +58,14 @@ class Category(object):
         self.id = json['id']
 
 
-class Versions(object):
-    def __init__(self, spiget, json):
-        self.versions = list(map(lambda v: Version(self, v), json))
+def ListResult(clazz):
+    class ListResultInner(object):
+        def __init__(self, spiget, json):
+            self.items = list(map(lambda v: clazz(self, v), json))
 
-    def __getitem__(self, key):
-        return self.versions.__getitem__(key)
+        def __getitem__(self, key):
+            return self.items.__getitem__(key)
+    return ListResultInner
 
 
 class Version(object):
@@ -92,4 +94,4 @@ class SpiGet(object):
     category = api_call("categories/{}", Category)
 
     resource_details = api_call("resources/{}", Resource)
-    resource_versions = api_call("resources/{}/versions", Versions)
+    resource_versions = api_call("resources/{}/versions", ListResult(Version))
