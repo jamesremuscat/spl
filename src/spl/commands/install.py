@@ -1,9 +1,8 @@
 import os
-import yaml
 
+from spl.bukkit import get_data_directory
 from spl.errors import NonSingletonResultException, ExitCode
 from spl.state import State, ResourceState
-from zipfile import ZipFile
 
 
 def add_parser_args(parser):
@@ -50,10 +49,3 @@ def run(spiget, args):
         except NonSingletonResultException:
             print("'{}' matches more than one resource. Please use the resource ID to show details.".format(args.package_name))
             return ExitCode.NON_SINGLETON_RESULT
-
-
-def get_data_directory(plugin_jar):
-    with ZipFile(plugin_jar, 'r') as jar:
-        with jar.open('plugin.yml', 'r') as plugin_yml:
-            yml = yaml.load(plugin_yml)
-            return yml['name']
