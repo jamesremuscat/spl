@@ -61,19 +61,23 @@ def deserialize_objects(spiget):
 
 
 class State(StateLock):
+    _singleton = None
+
     def __init__(self, state=_INITIAL_STATE):
         self._state = state
 
     @staticmethod
     def load(spiget):
-        with StateLock():
-            if os.path.exists(_STATE_FILE):
-                with open(_STATE_FILE, 'r') as stateFile:
-                    object_hook = deserialize_objects(spiget)
-                    state = simplejson.load(stateFile, object_hook=object_hook)
-                    return State(state)
-            else:
-                return State()
+        if State._singleton is None:
+            with StateLock():
+                if os.path.exists(_STATE_FILE):
+                    with open(_STATE_FILE, 'r') as stateFile:
+                        object_hook = deserialize_objects(spiget)
+                        state = simplejson.load(stateFile, object_hook=object_hook)
+                        _singleton = State(state)
+                else:
+                    State._singleton = State()
+        return State._singleton
 
     def save(self):
         with StateLock():
@@ -111,6 +115,9 @@ class State(StateLock):
 
     def enable_resource(self, resource):
         self._state['installed_resources'][str(resource.id)]['state'] = ResourceState.INSTALLED_ENABLED
+
+    def resource_jar_file(self, resource):
+        return os.path.join(self.get_plugins_dir(), "{}.jar".format(resource.id))
 
 
 class ResourceState(Enum):
