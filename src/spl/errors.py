@@ -9,6 +9,7 @@ class ExitCode(Enum):
     UNINSTALLABLE = 4
     NOT_INSTALLED = 5
     ALREADY_ENABLED = 6
+    ALREADY_DISABLED = 7
 
 
 class NonSingletonResultException(Exception):
