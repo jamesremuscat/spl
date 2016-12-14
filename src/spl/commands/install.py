@@ -23,7 +23,7 @@ def run(spiget, args):
                 return ExitCode.UNINSTALLABLE
 
             plugins_dir = state.get_plugins_dir()
-            dest_file = os.path.join(plugins_dir, args.package_name + ".jar")
+            dest_file = os.path.join(plugins_dir, "{}.jar".format(resource.id))
             print("Downloading {} to {}".format(resource.current_version.url, dest_file))
             plugin_file = resource.download()
             size = 0
@@ -36,14 +36,21 @@ def run(spiget, args):
 
             state.install_resource(resource)
 
-            print("Enabling plugin {} ({})...".format(resource.name, resource.current_version.name))
-
             data_dir_name = get_data_directory(dest_file)
-            os.symlink(os.path.abspath(dest_file), 'plugins/{}.jar'.format(data_dir_name))
-            os.mkdir(os.path.join(plugins_dir, data_dir_name))
-            os.symlink(os.path.abspath(os.path.join(plugins_dir, data_dir_name)), 'plugins/{}'.format(data_dir_name))
+            spl_data_dir = os.path.join(plugins_dir, "{}-data".format(resource.id))
 
-            state.enable_resource(resource)
+            target_jarfile = 'plugins/{}.jar'.format(data_dir_name)
+            target_data_dir = 'plugins/{}'.format(data_dir_name)
+
+            if os.path.exists(target_jarfile) or os.path.exists(target_data_dir):
+                print("An existing enabled plugin conflicts with the data directory name {}. You must disable that plugin before {} can be enabled.".format(data_dir_name, resource.name))
+            else:
+                print("Enabling plugin {} ({})...".format(resource.name, resource.current_version.name))
+                os.mkdir(spl_data_dir)
+                os.symlink(os.path.abspath(dest_file), target_jarfile)
+                os.symlink(os.path.abspath(spl_data_dir), target_data_dir)
+
+                state.enable_resource(resource)
 
             return ExitCode.OK
         except NonSingletonResultException:
