@@ -7,6 +7,8 @@ class ExitCode(Enum):
     CANNOT_GET_STATE_LOCK = 2
     NON_SINGLETON_RESULT = 3
     UNINSTALLABLE = 4
+    NOT_INSTALLED = 5
+    ALREADY_ENABLED = 6
 
 
 class NonSingletonResultException(Exception):
