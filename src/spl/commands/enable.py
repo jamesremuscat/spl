@@ -34,7 +34,8 @@ def run(spiget, args):
                     print("An existing enabled plugin conflicts with the data directory name {}. You must disable that plugin before {} can be enabled.".format(data_dir_name, resource.name))
                 else:
                     print("Enabling plugin {} ({})...".format(resource.name, resource.current_version.name))
-                    os.mkdir(spl_data_dir)
+                    if not os.path.exists(spl_data_dir):
+                        os.mkdir(spl_data_dir)
                     os.symlink(os.path.abspath(source_jar_file), target_jarfile)
                     os.symlink(os.path.abspath(spl_data_dir), target_data_dir)
 
