@@ -9,6 +9,7 @@ import spl.commands as commands
 from argparse import ArgumentParser
 from spl.metadata import NAME, VERSION
 from spl.errors import CannotGetStateLockException, ExitCode
+from spl.spiget import SpiGet
 
 
 COMMANDS = [m for _, m, _ in pkgutil.walk_packages(commands.__path__) if m[0] != "_"]
@@ -39,7 +40,8 @@ def main(argv=None):
 
     if args.func:
         try:
-            return args.func(args).value
+            spiget = SpiGet()
+            return args.func(spiget, args).value
         except CannotGetStateLockException:
             print("Cannot obtain lock (is another spl process running?)")
             return ExitCode.CANNOT_GET_STATE_LOCK.value

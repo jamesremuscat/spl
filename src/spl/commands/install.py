@@ -1,7 +1,6 @@
 import os
 
 from spl.errors import NonSingletonResultException, ExitCode
-from spl.spiget import SpiGet
 from spl.state import State
 
 
@@ -9,8 +8,7 @@ def add_parser_args(parser):
     parser.add_argument("package_name")
 
 
-def run(args):
-    spiget = SpiGet()
+def run(spiget, args):
     with State.load(spiget) as state:
         try:
             resource = spiget.resource_details(args.package_name)
