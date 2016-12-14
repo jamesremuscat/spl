@@ -19,7 +19,7 @@ def formatResource(resource, spiget):
 
     with State.load(spiget) as state:
 
-        installed_version = state.installed_resources[str(resource.id)].current_version if str(resource.id) in state.installed_resources else "N/A"
+        installed_version = state.installed_resources[str(resource.id)]['resource'].current_version if state.resource_is_installed(resource) else "N/A"
 
         strings = [
             "Package:           {}".format(resource.name),

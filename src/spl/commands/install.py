@@ -1,7 +1,9 @@
 import os
+import yaml
 
 from spl.errors import NonSingletonResultException, ExitCode
-from spl.state import State
+from spl.state import State, ResourceState
+from zipfile import ZipFile
 
 
 def add_parser_args(parser):
@@ -13,7 +15,7 @@ def run(spiget, args):
         try:
             resource = spiget.resource_details(args.package_name)
 
-            if str(resource.id) in state.installed_resources:
+            if state.resource_state(resource) != ResourceState.NOT_INSTALLED:
                 print("Resource {} is already installed, nothing to do.".format(resource.name))
                 return ExitCode.OK
 
@@ -36,9 +38,22 @@ def run(spiget, args):
             state.install_resource(resource)
 
             print("Enabling plugin {} ({})...".format(resource.name, resource.current_version.name))
-            os.symlink(os.path.abspath(dest_file), 'plugins/{}.jar'.format(resource.name))
+
+            data_dir_name = get_data_directory(dest_file)
+            os.symlink(os.path.abspath(dest_file), 'plugins/{}.jar'.format(data_dir_name))
+            os.mkdir(os.path.join(plugins_dir, data_dir_name))
+            os.symlink(os.path.abspath(os.path.join(plugins_dir, data_dir_name)), 'plugins/{}'.format(data_dir_name))
+
+            state.enable_resource(resource)
 
             return ExitCode.OK
         except NonSingletonResultException:
             print("'{}' matches more than one resource. Please use the resource ID to show details.".format(args.package_name))
             return ExitCode.NON_SINGLETON_RESULT
+
+
+def get_data_directory(plugin_jar):
+    with ZipFile(plugin_jar, 'r') as jar:
+        with jar.open('plugin.yml', 'r') as plugin_yml:
+            yml = yaml.load(plugin_yml)
+            return yml['name']

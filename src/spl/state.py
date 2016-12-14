@@ -2,11 +2,12 @@ import lockfile
 import os
 import simplejson
 
+from enum import Enum
 from spl.errors import CannotGetStateLockException
 
 
 _INITIAL_STATE = {
-    'installed_resources': {}
+    'installed_resources': {},
 }
 
 _STATE_DIR = '.spl/'
@@ -40,9 +41,19 @@ def my_import(name):
     return mod
 
 
+class EnumEncoder(simplejson.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Enum):
+            return {"__enum__": str(obj)}
+        return simplejson.JSONEncoder.default(self, obj)
+
+
 def deserialize_objects(spiget):
     def inner(obj):
-        if 'type' in obj:
+        if "__enum__" in obj:
+            name, member = obj["__enum__"].split(".")
+            return getattr(globals()[name], member)
+        elif 'type' in obj:
             clazz = my_import(obj['type'])
             return clazz(spiget, obj)
         return obj
@@ -67,7 +78,7 @@ class State(StateLock):
     def save(self):
         with StateLock():
             with open(_STATE_FILE, 'w') as stateFile:
-                return simplejson.dump(self._state, stateFile, for_json=True)
+                return simplejson.dump(self._state, stateFile, for_json=True, cls=EnumEncoder)
 
     def __enter__(self):
         StateLock.__enter__(self)
@@ -87,5 +98,22 @@ class State(StateLock):
     def installed_resources(self):
         return self._state['installed_resources'].copy()
 
+    def resource_state(self, resource):
+        if str(resource.id) in self._state['installed_resources']:
+            return self._state['installed_resources'][str(resource.id)]['state']
+        return ResourceState.NOT_INSTALLED
+
+    def resource_is_installed(self, resource):
+        return self.resource_state(resource) != ResourceState.NOT_INSTALLED
+
     def install_resource(self, resource):
-        self._state['installed_resources'][str(resource.id)] = resource
+        self._state['installed_resources'][str(resource.id)] = {'resource': resource, 'state': ResourceState.INSTALLED_DISABLED}
+
+    def enable_resource(self, resource):
+        self._state['installed_resources'][str(resource.id)]['state'] = ResourceState.INSTALLED_ENABLED
+
+
+class ResourceState(Enum):
+    NOT_INSTALLED = 0
+    INSTALLED_DISABLED = 1
+    INSTALLED_ENABLED = 2
