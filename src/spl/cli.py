@@ -8,6 +8,7 @@ import spl.commands as commands
 
 from argparse import ArgumentParser
 from spl.metadata import NAME, VERSION
+from spl.errors import CannotGetStateLockException, ExitCode
 
 
 COMMANDS = [m for _, m, _ in pkgutil.walk_packages(commands.__path__) if m[0] != "_"]
@@ -37,14 +38,18 @@ def main(argv=None):
     args = parser.parse_args()
 
     if args.func:
-        return args.func(args)
+        try:
+            return args.func(args)
+        except CannotGetStateLockException:
+            print("Cannot obtain lock (is another spl process running?)")
+            return ExitCode.CANNOT_GET_STATE_LOCK
     else:
         # argparse should prevent us from getting here
         print("Unrecognised action: {}".format(args.command))
         print("Available actions: {}".format(COMMANDS))
-        return 1
+        return ExitCode.UNKNOWN_COMMAND
 
-    return 0
+    return ExitCode.OK
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main().value)

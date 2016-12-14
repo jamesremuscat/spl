@@ -24,7 +24,7 @@ setup(
     package_dir = {'':'src'},
     setup_requires=['nose'],
     tests_require=[],
-    install_requires=['requests', 'cachecontrol[filecache]'],
+    install_requires=['cachecontrol[filecache]', 'lockfile', 'requests', 'simplejson'],
     entry_points={
         'console_scripts': [
             'spl = spl.cli:main',
