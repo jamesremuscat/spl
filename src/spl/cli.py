@@ -39,17 +39,17 @@ def main(argv=None):
 
     if args.func:
         try:
-            return args.func(args)
+            return args.func(args).value
         except CannotGetStateLockException:
             print("Cannot obtain lock (is another spl process running?)")
-            return ExitCode.CANNOT_GET_STATE_LOCK
+            return ExitCode.CANNOT_GET_STATE_LOCK.value
     else:
         # argparse should prevent us from getting here
         print("Unrecognised action: {}".format(args.command))
         print("Available actions: {}".format(COMMANDS))
-        return ExitCode.UNKNOWN_COMMAND
+        return ExitCode.UNKNOWN_COMMAND.value
 
-    return ExitCode.OK
+    return ExitCode.OK.value
 
 if __name__ == "__main__":
     sys.exit(main().value)

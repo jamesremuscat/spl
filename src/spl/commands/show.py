@@ -1,5 +1,5 @@
 from spl.spiget import SpiGet
-from spl.errors import NonSingletonResultException
+from spl.errors import NonSingletonResultException, ExitCode
 from spl.state import State
 
 
@@ -10,16 +10,16 @@ def add_parser_args(parser):
 def run(args):
     spiget = SpiGet()
     try:
-        print(formatResource(spiget.resource_details(args.package_name)))
-        return 0
+        print(formatResource(spiget.resource_details(args.package_name), spiget))
+        return ExitCode.OK
     except NonSingletonResultException:
         print("'{}' matches more than one resource. Please use the resource ID to show details.".format(args.package_name))
-        return 1
+        return ExitCode.NON_SINGLETON_RESULT
 
 
-def formatResource(resource):
+def formatResource(resource, spiget):
 
-    with State.load() as state:
+    with State.load(spiget) as state:
 
         installed_version = state.installed_resources[str(resource.id)].current_version if str(resource.id) in state.installed_resources else "N/A"
 
