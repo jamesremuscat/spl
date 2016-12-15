@@ -24,7 +24,7 @@ setup(
     package_dir = {'':'src'},
     setup_requires=['nose'],
     tests_require=[],
-    install_requires=['bunch', 'cachecontrol[filecache]', 'cfscrape', 'lockfile', 'pyyaml', 'requests', 'simplejson'],
+    install_requires=['bunch', 'cachecontrol[filecache]', 'cfscrape', 'lockfile', 'pyyaml', 'requests', 'semantic_version', 'simplejson'],
     entry_points={
         'console_scripts': [
             'spl = spl.cli:main',
