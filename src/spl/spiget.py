@@ -33,12 +33,26 @@ class Resource(object):
         self.name = json['name']
         self.tag = json['tag']
         self.update_date = datetime.datetime.fromtimestamp(json['updateDate'])
-        self.author = spiget.author(json['author']['id'])
 
-        self.versions = sorted(spiget.resource_versions(self.id), key=lambda v: v.release_date, reverse=True)
-        self.current_version = [v for v in self.versions if v.id == json['version']['id']][0]
+        if isinstance(json['author'], Author):
+            self.author = json['author']
+        else:
+            self.author = spiget.author(json['author']['id'])
 
-        self.category = spiget.category(json['category']['id'])
+        if isinstance(json['versions'][0], Version):
+            self.versions = json['versions']
+        else:
+            self.versions = sorted(spiget.resource_versions(self.id), key=lambda v: v.release_date, reverse=True)
+
+        if isinstance(json['version'], Version):
+            self.current_version = json['version']
+        else:
+            self.current_version = [v for v in self.versions if v.id == json['version']['id']][0]
+
+        if isinstance(json['category'], Category):
+            self.category = json['category']
+        else:
+            self.category = spiget.category(json['category']['id'])
 
         self.tested_versions = json['testedVersions']
 
@@ -65,10 +79,10 @@ class Resource(object):
             'name': self.name,
             'tag': self.tag,
             'updateDate': self.update_date.timestamp(),
-            'author': {'id': self.author.id},
-            'category': {'id': self.category.id},
+            'author': self.author,
+            'category': self.category,
             'versions': self.versions,
-            'version': {'id': self.current_version.id},
+            'version': self.current_version,
             'testedVersions': self.tested_versions,
             'external': self.external,
             'file': {'size': self.file_size}
@@ -80,11 +94,25 @@ class Author(object):
         self.name = json['name']
         self.id = json['id']
 
+    def for_json(self):
+        return {
+            'type': 'spl.spiget.Author',
+            'id': self.id,
+            'name': self.name
+        }
+
 
 class Category(object):
     def __init__(self, spiget, json):
         self.name = json['name']
         self.id = json['id']
+
+    def for_json(self):
+        return {
+            'type': 'spl.spiget.Category',
+            'name': self.name,
+            'id': self.id
+        }
 
 
 def ListResult(clazz):
