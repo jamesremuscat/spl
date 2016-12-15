@@ -56,12 +56,12 @@ python setup.py install
 - `enable` - enable an installed but disabled plugin
 - `disable` - disable, but leave installed, a plugin
 - `list` - lists all installed plugins and their current state/most recent version
+- `upgrade` - upgrade a single plugin, or all plugins, to their most recent version
 
 Note to Minecraft server admin veterans: these are intended to be run from the commandline, not from within the MC server console!
 
 == Todo
 
-- `upgrade` - upgrade a single plugin, or all plugins, to their most recent version
 - `uninstall` - completely remove a plugin and its data
 - Allow specifying a particular version of a plugin to install
 - Allow filters on searches
