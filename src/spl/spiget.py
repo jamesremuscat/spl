@@ -63,12 +63,11 @@ class Resource(object):
             self.file_size = json['file']['size']
 
     def download(self):
-        if hasattr(self.current_version, 'url'):
-            if not self.external:
-                return requests.get("https://api.spiget.org/v2/resources/{}/download".format(self.id), stream=True)
-            else:
-                scraper = cfscrape.create_scraper()
-                return scraper.get("https://www.spigotmc.org/{}".format(self.current_version.url), stream=True)
+        if not self.external:
+            return requests.get("https://api.spiget.org/v2/resources/{}/download".format(self.id), stream=True)
+        elif hasattr(self.current_version, 'url'):
+            scraper = cfscrape.create_scraper()
+            return scraper.get("https://www.spigotmc.org/{}".format(self.current_version.url), stream=True)
         else:
             raise NotDownloadableException()
 

@@ -12,7 +12,7 @@ def add_parser_args(parser):
 def _do_install(state, resource):
     plugins_dir = state.get_plugins_dir()
     dest_file = os.path.join(plugins_dir, "{}.jar".format(resource.id))
-    print("Downloading {} to {}".format(resource.current_version.url, dest_file))
+    print("Downloading to {}".format(dest_file))
     plugin_file = resource.download()
     size = 0
     with open(dest_file, 'wb') as dest:
@@ -33,10 +33,6 @@ def run(spiget, args):
             if state.resource_state(resource) != ResourceState.NOT_INSTALLED:
                 print("Resource {} is already installed, nothing to do.".format(resource.name))
                 return ExitCode.OK
-
-            if not hasattr(resource.current_version, 'url'):
-                print("Resource {} ({}) is not installable (no URL supplied).".format(resource.name, resource.current_version.name))
-                return ExitCode.UNINSTALLABLE
 
             _do_install(state, resource)
 
