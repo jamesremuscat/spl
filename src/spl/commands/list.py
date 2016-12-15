@@ -7,14 +7,20 @@ def add_parser_args(parser):
     pass  # No arguments
 
 
+_TERMINAL_BOLD = "\033[1m"
+_TERMINAL_NORMAL = "\033[0;0m"
+
+
 def run(spiget, args):
     with State.load(spiget) as state:
 
-        print("\033[1m{:<8} {:<42} {:<10} {:<10}\033[0;0m".format(
+        print("{}{:<8} {:<42} {:<10} {:<10}{}".format(
+            _TERMINAL_BOLD,
             "ID",
             "Name",
             "Installed",
-            "Latest"
+            "Latest",
+            _TERMINAL_NORMAL
         ))
 
         for installed_resource in state.installed_resources.values():
@@ -31,9 +37,9 @@ def print_resource_details(installed, latest):
         "({})".format(installed['resource'].name) if installed['state'] == ResourceState.INSTALLED_DISABLED else installed['resource'].name,
         installed['resource'].current_version.name,
         "{}{}{}".format(
-            "\033[1m" if is_outdated else "",
+            _TERMINAL_BOLD if is_outdated else "",
             latest.current_version.name,
-            "\033[0;0m" if is_outdated else ""
+            _TERMINAL_NORMAL if is_outdated else ""
         )
     ))
 
