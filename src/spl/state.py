@@ -123,6 +123,9 @@ class State(StateLock):
     def install_resource(self, resource):
         self._state['installed_resources'][str(resource.id)] = {'resource': resource, 'state': ResourceState.INSTALLED_DISABLED}
 
+    def uninstall_resource(self, resource):
+        del self._state['installed_resources'][str(resource.id)]
+
     def enable_resource(self, resource):
         self._state['installed_resources'][str(resource.id)]['state'] = ResourceState.INSTALLED_ENABLED
 
