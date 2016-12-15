@@ -7,6 +7,7 @@ from spl.errors import CannotGetStateLockException
 
 
 _INITIAL_STATE = {
+    'version': 1,
     'installed_resources': {},
 }
 
