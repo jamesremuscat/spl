@@ -9,6 +9,22 @@ def add_parser_args(parser):
     parser.add_argument("package_name")
 
 
+def _do_install(state, resource):
+    plugins_dir = state.get_plugins_dir()
+    dest_file = os.path.join(plugins_dir, "{}.jar".format(resource.id))
+    print("Downloading {} to {}".format(resource.current_version.url, dest_file))
+    plugin_file = resource.download()
+    size = 0
+    with open(dest_file, 'wb') as dest:
+        for chunk in plugin_file.iter_content(chunk_size=1024):
+            if chunk:
+                dest.write(chunk)
+                size += len(chunk)
+
+    print("Downloaded {:.2f} kB.".format(size / 1024))
+    state.install_resource(resource)
+
+
 def run(spiget, args):
     with State.load(spiget) as state:
         try:
@@ -22,19 +38,7 @@ def run(spiget, args):
                 print("Resource {} ({}) is not installable (no URL supplied).".format(resource.name, resource.current_version.name))
                 return ExitCode.UNINSTALLABLE
 
-            plugins_dir = state.get_plugins_dir()
-            dest_file = os.path.join(plugins_dir, "{}.jar".format(resource.id))
-            print("Downloading {} to {}".format(resource.current_version.url, dest_file))
-            plugin_file = resource.download()
-            size = 0
-            with open(dest_file, 'wb') as dest:
-                for chunk in plugin_file.iter_content(chunk_size=1024):
-                    if chunk:
-                        dest.write(chunk)
-                        size += len(chunk)
-            print("Downloaded {:.2f} kB.".format(size / 1024))
-
-            state.install_resource(resource)
+            _do_install(state, resource)
 
             delegate('enable', spiget, package_name=resource.id)
 

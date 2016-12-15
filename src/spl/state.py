@@ -103,6 +103,15 @@ class State(StateLock):
     def installed_resources(self):
         return self._state['installed_resources'].copy()
 
+    def get_installed_resource(self, ident):
+        if ident in self._state['installed_resources']:  # by ID
+            return self._state['installed_resources'][ident]['resource']
+        else:  # try by name
+            pkgs = [s['resource'] for s in self._state['installed_resources'].values() if s['resource'].name == ident]
+            if len(pkgs) == 1:
+                return pkgs[0]
+        return None
+
     def resource_state(self, resource):
         if str(resource.id) in self._state['installed_resources']:
             return self._state['installed_resources'][str(resource.id)]['state']
