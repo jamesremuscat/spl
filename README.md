@@ -1,8 +1,8 @@
-= spl - Spigot Plugin Loader
+# spl - Spigot Plugin Loader
 
 `spl` is a command-line plugin manager for Spigot/Bukkit, written in Python 3.
 
-== Usage examples
+## Usage examples
 
 ```
 $ spl search broadcast
@@ -34,7 +34,7 @@ Updated:           2014-11-28 16:49:00
 Tested against:    []
 ```
 
-== Installation
+## Installation
 
 From PyPI:
 
@@ -48,7 +48,7 @@ Or from a GitHub checkout:
 python setup.py install
 ```
 
-== Commands Quick Reference
+## Commands Quick Reference
 
 - `search` - search for a resource
 - `show` - give details of a resource, either installed or not
@@ -61,14 +61,14 @@ python setup.py install
 
 Note to Minecraft server admin veterans: these are intended to be run from the commandline, not from within the MC server console!
 
-== Todo
+## Todo
 
 - Allow specifying a particular version of a plugin to install
 - Allow filters on searches
 - Server-side plugin management extension (change plugin state without restart)
 - Cache management (e.g. clear cache)
 
-== Contributions
+## Contributions
 
 Contributions are welcome:
 
