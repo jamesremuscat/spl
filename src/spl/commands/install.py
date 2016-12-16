@@ -13,7 +13,7 @@ def _do_install(state, resource):
     plugins_dir = state.get_plugins_dir()
     dest_file = os.path.join(plugins_dir, "{}.jar".format(resource.id))
     print("Downloading to {}".format(dest_file))
-    plugin_file = resource.download()
+    plugin_file = resource.current_version.download()
     size = 0
     with open(dest_file, 'wb') as dest:
         for chunk in plugin_file.iter_content(chunk_size=1024):

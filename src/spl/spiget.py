@@ -44,8 +44,12 @@ class Resource(object):
         else:
             self.versions = sorted(spiget.resource_versions(self.id), key=lambda v: v.release_date, reverse=True)
 
+        for v in self.versions:
+            v.resource_id = self.id
+
         if isinstance(json['version'], Version):
             self.current_version = json['version']
+            self.current_version.resource_id = None
         else:
             self.current_version = [v for v in self.versions if v.id == json['version']['id']][0]
 
@@ -135,6 +139,14 @@ class Version(object):
         self.release_date = datetime.datetime.fromtimestamp(json['releaseDate'])
         if 'url' in json:
             self.url = json['url']
+        self.resource_id = None
+
+    def download(self):
+        if self.resource_id:
+            scraper = cfscrape.create_scraper()
+            return scraper.get("https://api.spiget.org/v2/resources/{}/versions/{}/download".format(self.resource_id, self.id), stream=True)
+        else:
+            raise NotDownloadableException()
 
     def __repr__(self, *args, **kwargs):
         return self.name
